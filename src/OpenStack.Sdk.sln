@@ -7,6 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{C7AA78F9-D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenStack.Core", "core\OpenStack.Core\OpenStack.Core\OpenStack.Core.csproj", "{60DF96EF-51AF-4193-842E-C8B27C077ECE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iam", "iam", "{7D7BA08B-10BF-4F95-AC19-8E6FC2414EBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenStack.Iam", "iam\OpenStack.Iam\OpenStack.Iam\OpenStack.Iam.csproj", "{9328AF95-D8DA-43E6-9F26-E49D498F8C6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenStack.Iam.Samples", "iam\OpenStack.Iam\OpenStack.Iam.Samples\OpenStack.Iam.Samples.csproj", "{A1B3B422-D976-4D03-BB0A-9638270C28F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +23,14 @@ Global
 		{60DF96EF-51AF-4193-842E-C8B27C077ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60DF96EF-51AF-4193-842E-C8B27C077ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60DF96EF-51AF-4193-842E-C8B27C077ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9328AF95-D8DA-43E6-9F26-E49D498F8C6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9328AF95-D8DA-43E6-9F26-E49D498F8C6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9328AF95-D8DA-43E6-9F26-E49D498F8C6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9328AF95-D8DA-43E6-9F26-E49D498F8C6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B3B422-D976-4D03-BB0A-9638270C28F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B3B422-D976-4D03-BB0A-9638270C28F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B3B422-D976-4D03-BB0A-9638270C28F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B3B422-D976-4D03-BB0A-9638270C28F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -26,5 +40,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{60DF96EF-51AF-4193-842E-C8B27C077ECE} = {C7AA78F9-D454-4700-A397-D572F9B4D635}
+		{9328AF95-D8DA-43E6-9F26-E49D498F8C6C} = {7D7BA08B-10BF-4F95-AC19-8E6FC2414EBF}
+		{A1B3B422-D976-4D03-BB0A-9638270C28F6} = {7D7BA08B-10BF-4F95-AC19-8E6FC2414EBF}
 	EndGlobalSection
 EndGlobal
