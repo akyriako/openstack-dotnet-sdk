@@ -20,7 +20,7 @@ namespace OpenStack.Iam.Samples
             Console.WriteLine(authenticationAndTokenManagementClient.GetEndpointUri());
             Console.WriteLine(
                 AuthenticationAndTokenManagementRequestBodyFactory.BuildPasswordAuthenticationUnscopedAuthorizationRequestBody
-                ("admin", "default", "password"));
+                ("akyriako", "default", "password"));
 
             Console.ReadLine();
         }
