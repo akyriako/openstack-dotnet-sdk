@@ -6,8 +6,19 @@
 
   <ItemGroup>
     <Folder Include="Authentication\" />
+    <Folder Include="Authentication\Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\OpenStack.Core\OpenStack.Core\OpenStack.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Authentication\Models\PasswordAuthenticationUnscopedAuthorization.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Authentication\Models\PasswordAuthenticationUnscopedAuthorization.json" />
   </ItemGroup>
 </Project>

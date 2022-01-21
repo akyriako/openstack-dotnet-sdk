@@ -1,5 +1,7 @@
 ﻿using System;
 using OpenStack.Iam.Authentication;
+using OpenStack.Iam.Authentication.Models;
+
 
 namespace OpenStack.Iam.Samples
 {
@@ -16,6 +18,9 @@ namespace OpenStack.Iam.Samples
                 new AuthenticationAndTokenManagementClient(keyStoneUrl, options);
 
             Console.WriteLine(authenticationAndTokenManagementClient.GetEndpointUri());
+            Console.WriteLine(
+                AuthenticationAndTokenManagementRequestBodyFactory.BuildPasswordAuthenticationUnscopedAuthorizationRequestBody
+                ("admin", "default", "password"));
 
             Console.ReadLine();
         }
