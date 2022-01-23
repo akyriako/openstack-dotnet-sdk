@@ -1,51 +1,72 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
+using Microsoft.Extensions.Options;
 
 namespace OpenStack.Core
 {
-    public abstract class ServiceClientBase<T,O> where T: ServiceClientOptionsBase<O> where O:Enum
+    public abstract class ServiceClientBase<T> : IDisposable
+        where T: ServiceClientOptionsBase
     {
-        public Uri BaseUri { get; }
-        public string ServiceVersion { get; }
-        public T Options { get; }
+        private bool m_Disposed;
 
-        protected virtual string ExtraPathSegments { get; set; }
+        protected virtual string SuffixSegments { get; set; }
 
-        public ServiceClientBase(string serviceBaseUrl) : this(serviceBaseUrl, default)
+        protected readonly HttpClient HttpClient;
+        protected readonly T Options;
+
+        public ServiceClientBase(HttpClient httpClient, string baseUri, string version = "")
         {
-            
+            if (String.IsNullOrEmpty(baseUri))
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            Options = default(T);
+            Options.BaseUri = baseUri;
+            Options.Version = version;
+
+            HttpClient = httpClient;
         }
 
-        public ServiceClientBase(string serviceBaseUrl, T options = default)
+        public ServiceClientBase(HttpClient httpClient, T options)
         {
-            if (String.IsNullOrEmpty(serviceBaseUrl))
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(serviceBaseUrl));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            Uri serviceBaseUri;
-
-            if (!Uri.TryCreate(serviceBaseUrl, UriKind.Absolute, out serviceBaseUri))
+            if (String.IsNullOrEmpty(options.BaseUri))
             {
-                throw new UriFormatException(nameof(serviceBaseUrl));
+                throw new ArgumentNullException(nameof(options.BaseUri));
             }
 
-            BaseUri = serviceBaseUri;
+            HttpClient = httpClient;
             Options = options;
+        }
 
-            if (options == default)
-            {
-                ServiceVersion = Enum.GetValues(typeof(O)).GetValue(0).ToString();
-            }
+        public ServiceClientBase(HttpClient httpClient, IOptions<T> options) : this(httpClient, options?.Value)
+        {
+            
         }
 
         protected ServiceClientBase()
         {
         }
 
-        public string GetEndpointUri()
+        public string GetUri()
         {
-            return new Uri(BaseUri, $"{(Options == default ? this.ServiceVersion : Options.ServiceVersion)}/{ExtraPathSegments}").ToString();
+            return new Uri(new Uri(Options.BaseUri), $"{Options.Version}/{SuffixSegments}").ToString();
+        }
+
+        public void Dispose()
+        {
+            if (m_Disposed)
+            {
+                return;
+            }
+
+            m_Disposed = true;
         }
     }
 }

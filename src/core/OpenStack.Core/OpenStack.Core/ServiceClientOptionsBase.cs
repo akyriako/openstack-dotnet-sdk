@@ -2,18 +2,9 @@
 
 namespace OpenStack.Core
 {
-    public abstract class ServiceClientOptionsBase<E> where E: Enum
+    public abstract class ServiceClientOptionsBase
     {
-        public string ServiceVersion { get; }
-
-        public ServiceClientOptionsBase(E serviceVersion)
-        {
-            if (serviceVersion == null)
-            {
-                throw new ArgumentNullException(nameof(serviceVersion));
-            }
-
-            ServiceVersion = serviceVersion.ToString();
-        }
+        public string BaseUri { get; set; }
+        public string Version { get; set; }
     }
 }
