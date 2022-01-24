@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using OpenStack.Core;
 
@@ -28,6 +29,15 @@ namespace OpenStack.Iam.Authentication
             string tenantId);
 
         Task<JsonDocument> ValidateAndShowInformationForTokenAsync(
-            string token);
+            string authToken,
+            string subjectToken);
+
+        Task<HttpStatusCode> CheckTokenAsync(
+            string authToken,
+            string subjectToken);
+
+        Task<JsonDocument> RevokeTokenAsync(
+            string authToken,
+            string subjectToken);
     }
 }

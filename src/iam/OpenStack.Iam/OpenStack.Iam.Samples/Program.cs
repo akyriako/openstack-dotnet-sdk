@@ -26,15 +26,29 @@ namespace OpenStack.Iam.Samples
 
             var authenticationAndTokenManagementClient = serviceProvider.GetService<IAuthenticationAndTokenManagementClient>();
 
-            var token = await authenticationAndTokenManagementClient.
+            var authToken = await authenticationAndTokenManagementClient.
                 GetTokenPasswordAuthenticationScopedAuthorizationAsync(
                 "5e77900bc83e4ee0a0f1be58dcec635c",
                 "9a9bc4e78cad4b8286c9abb07d05404b",
                 "bcf5d5acb6c0ff1875344cfd9f3");
 
-            var responseAsJson = await authenticationAndTokenManagementClient.ValidateAndShowInformationForTokenAsync(token.Token);
+            var subjectToken = await authenticationAndTokenManagementClient.
+                GetTokenPasswordAuthenticationScopedAuthorizationAsync(
+                "5e77900bc83e4ee0a0f1be58dcec635c",
+                "9a9bc4e78cad4b8286c9abb07d05404b",
+                "bcf5d5acb6c0ff1875344cfd9f3");
 
-            Console.WriteLine(responseAsJson.ToJsonString());
+            //var responseAsJson = await authenticationAndTokenManagementClient.ValidateAndShowInformationForTokenAsync(token.Token);
+            //var statusCode = await authenticationAndTokenManagementClient.CheckTokenAsync(token.Token);
+
+            var revoke1 = await authenticationAndTokenManagementClient.RevokeTokenAsync(authToken.Token, subjectToken.Token);
+            Console.WriteLine(revoke1?.ToJsonString());
+
+            var revoke2 = await authenticationAndTokenManagementClient.RevokeTokenAsync(authToken.Token, subjectToken.Token);
+            Console.WriteLine(revoke2?.ToJsonString());
+
+            var responseAsJson = await authenticationAndTokenManagementClient.ValidateAndShowInformationForTokenAsync(authToken.Token, subjectToken.Token);
+            Console.WriteLine(responseAsJson?.ToJsonString());
 
             Console.ReadLine();
         }

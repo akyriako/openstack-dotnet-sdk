@@ -36,13 +36,21 @@ namespace OpenStack.Iam.Extensions
             return accessToken;
         }
 
-        public static JsonDocument GetContectAsJsonDocument(this HttpResponseMessage httpResponseMessage)
+        public static bool TryGetContectAsJsonDocument(this HttpResponseMessage httpResponseMessage, out JsonDocument jsonDocument)
         {
-            var contentAsString = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var contentAsJsonDocument = System.Text.Json.JsonSerializer.Deserialize<JsonDocument>(contentAsString);
+            try
+            {
+                var contentAsString = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                jsonDocument = System.Text.Json.JsonSerializer.Deserialize<JsonDocument>(contentAsString);
 
-            return contentAsJsonDocument;
+                return true;
+            }
+            catch (Exception ex)
+            {
+            }
 
+            jsonDocument = null;
+            return false;
         }
     }
 }

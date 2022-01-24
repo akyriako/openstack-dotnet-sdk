@@ -7,6 +7,7 @@ using OpenStack.Core;
 using OpenStack.Iam.Extensions;
 using OpenStack.Iam.Authentication.Models;
 using System.Text.Json;
+using System.Net;
 
 namespace OpenStack.Iam.Authentication
 {
@@ -263,13 +264,19 @@ namespace OpenStack.Iam.Authentication
         }
 
         public async Task<JsonDocument> ValidateAndShowInformationForTokenAsync(
-            string token)
+            string authToken,
+            string subjectToken)
         {
             JsonDocument jsonDocument = null;
 
-            if (String.IsNullOrEmpty(token))
+            if (String.IsNullOrEmpty(authToken))
             {
-                throw new ArgumentNullException(nameof(token));
+                throw new ArgumentNullException(nameof(authToken));
+            }
+
+            if (String.IsNullOrEmpty(subjectToken))
+            {
+                throw new ArgumentNullException(nameof(subjectToken));
             }
 
             using (HttpRequestMessage httpRequestMessage =
@@ -277,20 +284,80 @@ namespace OpenStack.Iam.Authentication
                     HttpMethod.Get,
                     SuffixSegments))
             {
-                httpRequestMessage.Headers.Add("X-Auth-Token", token);
-                httpRequestMessage.Headers.Add("X-Subject-Token", token);
+                httpRequestMessage.Headers.Add("X-Auth-Token", authToken);
+                httpRequestMessage.Headers.Add("X-Subject-Token", subjectToken);
 
                 var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
 
-                httpResponseMessage.EnsureSuccessStatusCode();
+                //httpResponseMessage.EnsureSuccessStatusCode();
 
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    jsonDocument = httpResponseMessage.GetContectAsJsonDocument();
-                }
+                //if (httpResponseMessage.IsSuccessStatusCode)
+                //{
+                //     httpResponseMessage.TryGetContectAsJsonDocument(out jsonDocument);
+                //}
+                httpResponseMessage.TryGetContectAsJsonDocument(out jsonDocument);
             }
 
             return await Task.FromResult<JsonDocument>(jsonDocument);
+        }
+
+        public async Task<HttpStatusCode> CheckTokenAsync(
+            string authToken,
+            string subjectToken)
+        {
+            if (String.IsNullOrEmpty(authToken))
+            {
+                throw new ArgumentNullException(nameof(authToken));
+            }
+
+            if (String.IsNullOrEmpty(subjectToken))
+            {
+                throw new ArgumentNullException(nameof(subjectToken));
+            }
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Head,
+                    SuffixSegments))
+            {
+                httpRequestMessage.Headers.Add("X-Auth-Token", authToken);
+                httpRequestMessage.Headers.Add("X-Subject-Token", subjectToken);
+
+                var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+                return await Task.FromResult<HttpStatusCode>(httpResponseMessage.StatusCode);
+            }
+        }
+
+        public async Task<JsonDocument> RevokeTokenAsync(
+            string authToken,
+            string subjectToken)
+        {
+            JsonDocument jsonDocument = null;
+
+            if (String.IsNullOrEmpty(authToken))
+            {
+                throw new ArgumentNullException(nameof(authToken));
+            }
+
+            if (String.IsNullOrEmpty(subjectToken))
+            {
+                throw new ArgumentNullException(nameof(subjectToken));
+            }
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Delete,
+                    SuffixSegments))
+            {
+                httpRequestMessage.Headers.Add("X-Auth-Token", authToken);
+                httpRequestMessage.Headers.Add("X-Subject-Token", subjectToken);
+
+                var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+                var hasContent = httpResponseMessage.TryGetContectAsJsonDocument(out jsonDocument);
+
+                return await Task.FromResult<JsonDocument>(jsonDocument);
+            }
         }
     }
 
