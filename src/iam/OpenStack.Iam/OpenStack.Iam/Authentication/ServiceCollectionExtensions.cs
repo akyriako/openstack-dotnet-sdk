@@ -17,10 +17,21 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddHttpClient(namedClient, httpClient =>
             {
-                httpClient.BaseAddress = new Uri(options.BaseUri);
+                string baseAddress = $"{options.BaseUri.TrimEnd('/')}/{options.Version}/";
+                httpClient.BaseAddress = new Uri(baseAddress);
+                //httpClient.BaseAddress = new Uri(new Uri(options.BaseUri), options.Version);
                 httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
                 httpClient.DefaultRequestHeaders.Add("User-Agent", OpenStackNamedClients.OSDK_NC);
-            });
+                httpClient.Timeout = new TimeSpan(0, 0, 10);
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    ClientCertificateOptions = ClientCertificateOption.Manual,
+                    ServerCertificateCustomValidationCallback =
+                        (httpRequestMessage, cert, certChain, policyErrors) => true
+                };
+            }); ;
 
             services.AddScoped<IAuthenticationAndTokenManagementClient>(ctx =>
             {
@@ -32,5 +43,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        //public static IServiceCollection AddOpenStackServiceClient
+        //    (this IServiceCollection services, IConfiguration configuration, string client)
+        //{
+        //    switch (client)
+        //    {
+        //        case OpenStackNamedClients.OSDK_NC_IAM:
+        //            return AddAuthenticationAndTokenManagementClient(services, configuration, client);
+        //        default:
+        //            break;
+        //    }
+
+        //    return services;
+        //}
     }
 }

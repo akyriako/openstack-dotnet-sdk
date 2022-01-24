@@ -70,8 +70,13 @@ namespace OpenStack.Iam.Samples
 
             var authenticationAndTokenManagementClient = serviceProvider.GetService<IAuthenticationAndTokenManagementClient>();
 
-            var token = await authenticationAndTokenManagementClient.GetTokenPasswordAuthenticationUnscopedAuthorizationAsync();
-            Console.WriteLine(token);
+            var token = await authenticationAndTokenManagementClient.
+                GetTokenPasswordAuthenticationScopedAuthorizationAsync(
+                "5e77900bc83e4ee0a0f1be58dcec635c",
+                "9a9bc4e78cad4b8286c9abb07d05404b",
+                "bcf5d5acb6c0ff1875344cfd9f3");
+
+            Console.WriteLine(token.Token);
 
             Console.ReadLine();
         }

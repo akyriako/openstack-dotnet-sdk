@@ -7,6 +7,7 @@
   <ItemGroup>
     <Folder Include="Authentication\" />
     <Folder Include="Authentication\Models\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\OpenStack.Core\OpenStack.Core\OpenStack.Core.csproj" />
@@ -22,8 +23,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Authentication\Models\PasswordAuthenticationUnscopedAuthorization.json" />
+    <None Remove="Authentication\Models\PasswordAuthenticationUnscopedAuthorization %28copy%29.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Authentication\Models\PasswordAuthenticationUnscopedAuthorization.json" />
+    <EmbeddedResource Include="Authentication\Models\PasswordAuthenticationScopedAuthorization.json" />
   </ItemGroup>
 </Project>

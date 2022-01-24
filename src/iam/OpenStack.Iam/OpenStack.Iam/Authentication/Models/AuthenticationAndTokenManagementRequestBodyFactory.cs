@@ -32,6 +32,30 @@ namespace OpenStack.Iam.Authentication.Models
 
             return String.Format(responseBody, name, domain, password);
         }
+
+        public static string BuildPasswordAuthenticationScopedAuthorizationRequestBody(string userId, string tenantId, string password)
+        {
+            string responseBody;
+
+            var assembly = typeof(OpenStack.Iam.Authentication.Models.AuthenticationAndTokenManagementRequestBodyFactory).GetTypeInfo().Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly, "OpenStack.Iam.Authentication.Models");
+
+            using (var stream = embeddedFileProvider.GetFileInfo("PasswordAuthenticationScopedAuthorization.json").CreateReadStream())
+            {
+                if (stream == null)
+                {
+                    throw new InvalidOperationException("Could not load manifest resource stream.");
+                }
+                using (var reader = new StreamReader(stream))
+                {
+                    responseBody = reader.ReadToEnd();
+                }
+            }
+
+            responseBody = responseBody.ToFormattableJsonString();
+
+            return String.Format(responseBody, userId, password, tenantId);
+        }
     }
 }
     
