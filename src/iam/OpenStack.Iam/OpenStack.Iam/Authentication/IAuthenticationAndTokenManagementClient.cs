@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
+using OpenStack.Core;
 
 namespace OpenStack.Iam.Authentication
 {
@@ -13,5 +15,19 @@ namespace OpenStack.Iam.Authentication
             string userId,
             string tenantId,
             string password);
+
+        Task<AccessToken> GetTokenPasswordAuthenticationExplicitUnscopedAuthorizationAsync(
+            string userId,
+            string password);
+
+        Task<AccessToken> GetTokenTokenAuthenticationUnscopedAuthorizationAsync(
+            string token);
+
+        Task<AccessToken> GetTokenTokenAuthenticationScopedAuthorizationAsync(
+            string token,
+            string tenantId);
+
+        Task<JsonDocument> ValidateAndShowInformationForTokenAsync(
+            string token);
     }
 }

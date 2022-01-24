@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using OpenStack.Core;
 using OpenStack.Iam.Extensions;
 using OpenStack.Iam.Authentication.Models;
-using System.Linq;
+using System.Text.Json;
 
 namespace OpenStack.Iam.Authentication
 {
@@ -135,6 +135,162 @@ namespace OpenStack.Iam.Authentication
             }
 
             return await Task.FromResult<AccessToken>(accessToken);
+        }
+
+        public async Task<AccessToken> GetTokenPasswordAuthenticationExplicitUnscopedAuthorizationAsync(
+            string userId,
+            string password)
+        {
+            AccessToken accessToken = null;
+
+            if (String.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            if (String.IsNullOrEmpty(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            var bodyAsString =
+                AuthenticationAndTokenManagementRequestBodyFactory.
+                BuildPasswordAuthenticationExplicitUnscopedAuthorizationRequestBody(
+                    userId,
+                    password);
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    SuffixSegments))
+            {
+                using (var bodyAsJson = new StringContent(bodyAsString, Encoding.UTF8, "application/json"))
+                {
+                    httpRequestMessage.Content = bodyAsJson;
+                    var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+                    httpResponseMessage.EnsureSuccessStatusCode();
+
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        accessToken = httpResponseMessage.ExtractOpenStackAccessToken();
+                    }
+                }
+            }
+
+            return await Task.FromResult<AccessToken>(accessToken);
+        }
+
+        public async Task<AccessToken> GetTokenTokenAuthenticationUnscopedAuthorizationAsync(
+            string token)
+        {
+            AccessToken accessToken = null;
+
+            if (String.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            var bodyAsString =
+                AuthenticationAndTokenManagementRequestBodyFactory.
+                BuildTokenAuthenticationUnscopedAuthorizationRequestBody(
+                    token);
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    SuffixSegments))
+            {
+                using (var bodyAsJson = new StringContent(bodyAsString, Encoding.UTF8, "application/json"))
+                {
+                    httpRequestMessage.Content = bodyAsJson;
+                    var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+                    httpResponseMessage.EnsureSuccessStatusCode();
+
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        accessToken = httpResponseMessage.ExtractOpenStackAccessToken();
+                    }
+                }
+            }
+
+            return await Task.FromResult<AccessToken>(accessToken);
+        }
+
+        public async Task<AccessToken> GetTokenTokenAuthenticationScopedAuthorizationAsync(
+            string token,
+            string tenantId)
+        {
+            AccessToken accessToken = null;
+
+            if (String.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            if (String.IsNullOrEmpty(tenantId))
+            {
+                throw new ArgumentNullException(nameof(tenantId));
+            }
+
+            var bodyAsString =
+                AuthenticationAndTokenManagementRequestBodyFactory.
+                BuildTokenAuthenticationScopedAuthorizationRequestBody(
+                    token,
+                    tenantId);
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    SuffixSegments))
+            {
+                using (var bodyAsJson = new StringContent(bodyAsString, Encoding.UTF8, "application/json"))
+                {
+                    httpRequestMessage.Content = bodyAsJson;
+                    var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+                    httpResponseMessage.EnsureSuccessStatusCode();
+
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        accessToken = httpResponseMessage.ExtractOpenStackAccessToken();
+                    }
+                }
+            }
+
+            return await Task.FromResult<AccessToken>(accessToken);
+        }
+
+        public async Task<JsonDocument> ValidateAndShowInformationForTokenAsync(
+            string token)
+        {
+            JsonDocument jsonDocument = null;
+
+            if (String.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            using (HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(
+                    HttpMethod.Get,
+                    SuffixSegments))
+            {
+                httpRequestMessage.Headers.Add("X-Auth-Token", token);
+                httpRequestMessage.Headers.Add("X-Subject-Token", token);
+
+                var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+                httpResponseMessage.EnsureSuccessStatusCode();
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    jsonDocument = httpResponseMessage.GetContectAsJsonDocument();
+                }
+            }
+
+            return await Task.FromResult<JsonDocument>(jsonDocument);
         }
     }
 

@@ -1,0 +1,17 @@
+﻿{
+  "auth": {
+    "identity": {
+      "methods": [
+        "token"
+      ],
+      "token": {
+        "id": "{0}"
+      }
+    },
+    "scope": {
+      "project": {
+        "id": "{1}"
+      }
+    }
+  }
+}

@@ -19,7 +19,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 string baseAddress = $"{options.BaseUri.TrimEnd('/')}/{options.Version}/";
                 httpClient.BaseAddress = new Uri(baseAddress);
-                //httpClient.BaseAddress = new Uri(new Uri(options.BaseUri), options.Version);
                 httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
                 httpClient.DefaultRequestHeaders.Add("User-Agent", OpenStackNamedClients.OSDK_NC);
                 httpClient.Timeout = new TimeSpan(0, 0, 10);

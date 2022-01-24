@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenStack.Iam.Authentication
+namespace OpenStack.Core
 {
     public class AccessToken
     {

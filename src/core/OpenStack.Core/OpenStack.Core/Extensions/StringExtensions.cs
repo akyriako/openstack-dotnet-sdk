@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 
 namespace OpenStack.Core.Extensions
 {
@@ -86,7 +89,20 @@ namespace OpenStack.Core.Extensions
 
             return value;
         }
-    }
 
-    
+        public static string ToJsonString(this JsonDocument jsonDocument)
+        {
+            string jsonString;
+
+            using (var stream = new MemoryStream())
+            {
+                Utf8JsonWriter writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+                jsonDocument.WriteTo(writer);
+                writer.Flush();
+                jsonString = Encoding.UTF8.GetString(stream.ToArray());
+            }
+
+            return jsonString;
+        }
+    }
 }

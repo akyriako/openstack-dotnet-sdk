@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using OpenStack.Iam.Authentication;
+using System.Text.Json;
+using OpenStack.Core;
 
 namespace OpenStack.Iam.Extensions
 {
@@ -10,19 +11,38 @@ namespace OpenStack.Iam.Extensions
         public static AccessToken ExtractOpenStackAccessToken(this HttpResponseMessage httpResponseMessage)
         {
             string token = String.Empty;
+            DateTime expiresAt;
+            var expiresAtPropertyFound = false;
 
-            if (httpResponseMessage.Headers.Contains("x-subject-token"))
+            var contentAsString = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            using (var contentAsJsonDocument = System.Text.Json.JsonSerializer.Deserialize<JsonDocument>(contentAsString))
             {
-                token = httpResponseMessage.Headers.GetValues("x-subject-token").FirstOrDefault();
+                expiresAtPropertyFound = DateTime.TryParse(contentAsJsonDocument.RootElement
+                                                .GetProperty("token")
+                                                .GetProperty("expires_at").ToString(), out expiresAt);
+
+                if (httpResponseMessage.Headers.Contains("x-subject-token"))
+                {
+                    token = httpResponseMessage.Headers.GetValues("x-subject-token").FirstOrDefault();
+                }
             }
 
             AccessToken accessToken = new AccessToken()
             {
                 Token = token,
-                ExpiresAt = DateTime.Now.Ticks
+                ExpiresAt = expiresAtPropertyFound ? expiresAt.Ticks : DateTime.Now.AddMinutes(-1).Ticks
             };
 
             return accessToken;
+        }
+
+        public static JsonDocument GetContectAsJsonDocument(this HttpResponseMessage httpResponseMessage)
+        {
+            var contentAsString = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var contentAsJsonDocument = System.Text.Json.JsonSerializer.Deserialize<JsonDocument>(contentAsString);
+
+            return contentAsJsonDocument;
+
         }
     }
 }

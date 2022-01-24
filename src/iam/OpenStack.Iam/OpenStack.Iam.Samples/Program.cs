@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenStack.Iam.Authentication;
+using OpenStack.Core.Extensions;
 
 namespace OpenStack.Iam.Samples
 {
@@ -13,51 +14,6 @@ namespace OpenStack.Iam.Samples
     {
         static async Task Main(string[] args)
         {
-            string keyStoneUrl = "https://192.168.57.12:5000/";
-
-            //AuthenticationAndTokenManagementClientOptions options =
-            // new AuthenticationAndTokenManagementClientOptions(AuthenticationAndTokenManagementVersion.v2);
-
-            //AuthenticationAndTokenManagementClient authenticationAndTokenManagementClient =
-            //    new AuthenticationAndTokenManagementClient(keyStoneUrl, options);
-
-            //Console.WriteLine(authenticationAndTokenManagementClient.GetEndpointUri());
-            //Console.WriteLine(
-            //    AuthenticationAndTokenManagementRequestBodyFactory.BuildPasswordAuthenticationUnscopedAuthorizationRequestBody
-            //    ("akyriako", "default", "password"));
-
-            //Console.ReadLine();
-
-            //var configurationBuilder = new ConfigurationBuilder();
-            //var configuration = BootstrapConfigurationBuilder(configurationBuilder).Build();
-
-            //var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            //serviceProvider.
-
-            //var hostBuilder = Host.CreateDefaultBuilder(args);
-            //hostBuilder.ConfigureServices((hostContext, services) =>
-            //    {
-            //        services.AddHttpClient("AuthenticationAndTokenManagementClient");
-            //        services.AddSingleton<AuthenticationAndTokenManagementClient>();
-            //        services.AddHostedService<JobProcessingService>();
-            //        services.AddAuthenticationAndTokenManagementClient();
-            //    });
-
-            //var hostBuilder = new HostBuilder()
-            //    .ConfigureServices((hostContext, services) =>
-            //    {
-            //        services.AddHttpClient();
-            //        services.AddSingleton<AuthenticationAndTokenManagementClient>();
-            //        services.AddHostedService<JobProcessingService>();
-
-            //        services.AddAuthenticationAndTokenManagementClient();
-            //    });
-
-            //await hostBuilder.RunConsoleAsync();
-
-            //var services = new ServiceCollection();
-            //services.AddAuthenticationAndTokenManagementClient();
-
             var configurationBuilder = new ConfigurationBuilder();
             var configuration = BootstrapConfigurationBuilder(configurationBuilder).Build();
 
@@ -76,7 +32,9 @@ namespace OpenStack.Iam.Samples
                 "9a9bc4e78cad4b8286c9abb07d05404b",
                 "bcf5d5acb6c0ff1875344cfd9f3");
 
-            Console.WriteLine(token.Token);
+            var responseAsJson = await authenticationAndTokenManagementClient.ValidateAndShowInformationForTokenAsync(token.Token);
+
+            Console.WriteLine(responseAsJson.ToJsonString());
 
             Console.ReadLine();
         }
