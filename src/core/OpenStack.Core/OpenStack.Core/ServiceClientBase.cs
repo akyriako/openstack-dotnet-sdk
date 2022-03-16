@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using OpenStack.Core.Extensions
 
 namespace OpenStack.Core
 {
@@ -14,6 +17,7 @@ namespace OpenStack.Core
 
         protected readonly HttpClient HttpClient;
         protected readonly T Options;
+        protected readonly OpenStackCommonOptions CommonOptions;
 
         public ServiceClientBase(HttpClient httpClient, string baseUri, string version = "")
         {
@@ -57,6 +61,29 @@ namespace OpenStack.Core
         public string GetUri()
         {
             return new Uri(new Uri(Options.BaseUri), $"{Options.Version}/{SuffixSegments}").ToString();
+        }
+
+        public virtual async Task<JsonDocument> SendAsync(HttpRequestMessage httpRequestMessage)
+        {
+            JsonDocument jsonDocument = null;
+
+            var httpResponseMessage = await this.HttpClient.SendAsync(httpRequestMessage);
+
+            if (CommonOptions.ClientThrowsExceptionInsteadOfJsonResponse)
+            {
+                httpResponseMessage.EnsureSuccessStatusCode();
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    httpResponseMessage.TryGetContectAsJsonDocument(out jsonDocument);
+                }
+            }
+            else
+            {
+                httpResponseMessage.TryGetContectAsJsonDocument(out jsonDocument);
+            }
+
+            return await Task.FromResult<JsonDocument>(jsonDocument);
         }
 
         public void Dispose()
