@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenStack.Iam.Authentication;
 
 namespace OpenStack.Iam.Samples.Mvc
 {
@@ -22,9 +23,16 @@ namespace OpenStack.Iam.Samples.Mvc
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddControllersWithViews();
             services.AddAuthenticationAndTokenManagementClient(Configuration);
+
+            AuthenticationAndTokenManagementClientOptions authenticationAndTokenManagementClientOptions = new AuthenticationAndTokenManagementClientOptions();
+            Configuration.GetSection(OpenStackNamedClients.OSDK_NC_IAM).Bind(authenticationAndTokenManagementClientOptions);
+
+            //Create singleton from instance
+            services.AddSingleton<AuthenticationAndTokenManagementClientOptions>(authenticationAndTokenManagementClientOptions);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

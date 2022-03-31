@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OpenStack.Core.Extensions
+using OpenStack.Core.Extensions;
 
 namespace OpenStack.Core
 {

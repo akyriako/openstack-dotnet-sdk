@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OpenStack.Iam.Samples.Mvc.Models;
 using OpenStack.Iam.Authentication;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OpenStack.Iam.Samples.Mvc.Controllers
 {
@@ -14,15 +16,29 @@ namespace OpenStack.Iam.Samples.Mvc.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IAuthenticationAndTokenManagementClient _authenticationAndTokenManagementClient;
-
-        public HomeController(ILogger<HomeController> logger, IAuthenticationAndTokenManagementClient authenticationAndTokenManagementClient)
+        private readonly IConfiguration _configuration;
+        private readonly AuthenticationAndTokenManagementClientOptions _authenticationAndTokenManagementClientOptions;
+            
+        public HomeController(ILogger<HomeController> logger,
+            IAuthenticationAndTokenManagementClient authenticationAndTokenManagementClient,
+            IConfiguration configuration,
+            AuthenticationAndTokenManagementClientOptions authenticationAndTokenManagementClientOptions)
         {
             _logger = logger;
             _authenticationAndTokenManagementClient = authenticationAndTokenManagementClient;
+            _configuration = configuration;
+            _authenticationAndTokenManagementClientOptions = authenticationAndTokenManagementClientOptions;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var authToken = await _authenticationAndTokenManagementClient.
+                GetTokenPasswordAuthenticationScopedAuthorizationAsync(
+                _authenticationAndTokenManagementClientOptions.UserId,
+                _authenticationAndTokenManagementClientOptions.TenantId,
+                _authenticationAndTokenManagementClientOptions.Password);
+
+
             return View();
         }
 
